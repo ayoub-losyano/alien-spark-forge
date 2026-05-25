@@ -88,7 +88,7 @@ function Team() {
             </div>
             <div className="mt-4 flex gap-2">
               <Button size="sm" variant="ghost" onClick={() => { setEditing(m); setOpen(true); }}><Pencil className="h-3.5 w-3.5 mr-1" />Edit</Button>
-              <Button size="sm" variant="ghost" onClick={() => sendReset(m.email)}><KeyRound className="h-3.5 w-3.5 mr-1" />Send setup</Button>
+              <Button size="sm" variant="ghost" onClick={() => sendReset(m.email ?? "")}><KeyRound className="h-3.5 w-3.5 mr-1" />Send setup</Button>
               <Button size="sm" variant="ghost" onClick={() => del(m.id, m.name)} className="text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
             </div>
           </div>
