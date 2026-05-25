@@ -48,38 +48,38 @@ function Finance() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Finance</h1>
-        <p className="text-sm text-muted-foreground">Revenue and payment tracking.</p>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">Finance</h1>
+        <p className="text-sm text-muted-foreground mt-1">Revenue and payment tracking.</p>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {stats.map((s) => (
-          <div key={s.label} className="glass rounded-2xl p-4">
-            <div className="text-xs text-muted-foreground">{s.label}</div>
-            <div className="mt-1 text-lg md:text-xl font-bold">{s.value}</div>
+          <div key={s.label} className="glass rounded-xl p-5">
+            <div className="text-xs font-medium text-muted-foreground">{s.label}</div>
+            <div className="mt-2 text-lg md:text-xl font-semibold tracking-tight">{s.value}</div>
           </div>
         ))}
       </div>
-      <div className="glass rounded-2xl overflow-hidden">
+      <div className="glass rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="text-xs text-muted-foreground bg-white/5">
+            <thead className="text-xs text-muted-foreground bg-muted/50">
               <tr>
-                <th className="text-left px-4 py-3 font-normal">Client</th>
-                <th className="text-left px-4 py-3 font-normal">Package</th>
-                <th className="text-left px-4 py-3 font-normal">Total</th>
-                <th className="text-left px-4 py-3 font-normal">Deposit</th>
-                <th className="text-left px-4 py-3 font-normal">Remaining</th>
-                <th className="text-left px-4 py-3 font-normal">Method</th>
-                <th className="text-left px-4 py-3 font-normal">Status</th>
+                <th className="text-left px-4 py-3 font-medium">Client</th>
+                <th className="text-left px-4 py-3 font-medium">Package</th>
+                <th className="text-left px-4 py-3 font-medium">Total</th>
+                <th className="text-left px-4 py-3 font-medium">Deposit</th>
+                <th className="text-left px-4 py-3 font-medium">Remaining</th>
+                <th className="text-left px-4 py-3 font-medium">Method</th>
+                <th className="text-left px-4 py-3 font-medium">Status</th>
               </tr>
             </thead>
             <tbody>
               {isLoading && <tr><td colSpan={7} className="text-center py-8 text-muted-foreground">Loading…</td></tr>}
               {!isLoading && orders.length === 0 && <tr><td colSpan={7} className="text-center py-8 text-muted-foreground">No orders yet.</td></tr>}
               {orders.map((o) => (
-                <tr key={o.id} className="border-t border-border/30 hover:bg-white/5">
+                <tr key={o.id} className="border-t border-border hover:bg-muted/40 transition-colors">
                   <td className="px-4 py-3 font-medium">{o.client_name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{o.package ?? "—"}</td>
                   <td className="px-4 py-3">{formatVND(o.total)}</td>
