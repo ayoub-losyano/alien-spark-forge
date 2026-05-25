@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppLayout } from "@/components/AppLayout";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Plus, Trash2, Pencil, KeyRound, Info } from "lucide-react";
-import { logActivity } from "@/lib/logger";
+import { logActivity, TEAM_ROLES, uploadAvatar } from "@/lib/logger";
 
 export const Route = createFileRoute("/team")({ component: () => <AppLayout><Team /></AppLayout> });
 
@@ -114,17 +115,28 @@ function Team() {
 }
 
 function MemberDialog({ open, onOpenChange, member, onSaved }: any) {
-  const [f, setF] = useState<any>(member ?? { name: "", role: "", email: "", phone: "", status: "active", avatar_data_url: "" });
-  // Re-init when member changes
-  if (open && member && f.id !== member.id) setF(member);
-  if (open && !member && f.id) setF({ name: "", role: "", email: "", phone: "", status: "active", avatar_data_url: "" });
+  const emptyForm = { name: "", role: "Developer", email: "", phone: "", status: "active", avatar_data_url: "" };
+  const [f, setF] = useState<any>(member ?? emptyForm);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    if (open) setF(member ?? emptyForm);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, member?.id]);
 
   const set = (k: string, v: any) => setF((p: any) => ({ ...p, [k]: v }));
 
-  const handleAvatar = (file: File) => {
-    const r = new FileReader();
-    r.onload = () => set("avatar_data_url", r.result as string);
-    r.readAsDataURL(file);
+  const handleAvatar = async (file: File) => {
+    setUploading(true);
+    try {
+      const url = await uploadAvatar(file);
+      set("avatar_data_url", url);
+      toast.success("Avatar uploaded");
+    } catch (e: any) {
+      toast.error(e.message ?? "Upload failed");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const save = async () => {
@@ -135,6 +147,7 @@ function MemberDialog({ open, onOpenChange, member, onSaved }: any) {
       }).eq("id", member.id);
       if (error) return toast.error(error.message);
       toast.success("Member updated");
+      logActivity("member_updated", `Team member ${f.name} updated`, "team_member", member.id);
     } else {
       const { error, data } = await supabase.from("team_members").insert({
         name: f.name, role: f.role, email: f.email, phone: f.phone, status: f.status || "active", avatar_data_url: f.avatar_data_url,
@@ -154,8 +167,24 @@ function MemberDialog({ open, onOpenChange, member, onSaved }: any) {
         <div className="space-y-3">
           <div><Label>Name *</Label><Input value={f.name ?? ""} onChange={(e) => set("name", e.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Role</Label><Input value={f.role ?? ""} onChange={(e) => set("role", e.target.value)} /></div>
-            <div><Label>Status</Label><Input value={f.status ?? "active"} onChange={(e) => set("status", e.target.value)} /></div>
+            <div>
+              <Label>Role</Label>
+              <Select value={f.role ?? "Developer"} onValueChange={(v) => set("role", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {TEAM_ROLES.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Status</Label>
+              <Select value={f.status ?? "active"} onValueChange={(v) => set("status", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {["active", "inactive"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div><Label>Email</Label><Input type="email" value={f.email ?? ""} onChange={(e) => set("email", e.target.value)} /></div>
@@ -163,13 +192,14 @@ function MemberDialog({ open, onOpenChange, member, onSaved }: any) {
           </div>
           <div>
             <Label>Avatar</Label>
-            <Input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && handleAvatar(e.target.files[0])} />
+            <Input type="file" accept="image/*" disabled={uploading} onChange={(e) => e.target.files?.[0] && handleAvatar(e.target.files[0])} />
+            {uploading && <div className="text-xs text-muted-foreground mt-1">Uploading…</div>}
             {f.avatar_data_url && <img src={f.avatar_data_url} className="mt-2 h-16 w-16 rounded-full object-cover" />}
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={save}>Save</Button>
+          <Button onClick={save} disabled={uploading}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
