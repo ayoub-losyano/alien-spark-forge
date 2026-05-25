@@ -8,52 +8,69 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth";
+import { useTheme } from "@/lib/theme";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/settings")({ component: () => <AppLayout><Settings /></AppLayout> });
 
-type Company = {
-  agency_name: string; currency: string; language: string; contact_email: string; zalo: string; address: string;
-};
-const COMPANY_DEFAULT: Company = {
-  agency_name: "AlienSpark VN", currency: "VND", language: "English", contact_email: "", zalo: "", address: "",
-};
-
 function Settings() {
   const { user, signOut } = useAuth();
+  const { theme, setTheme } = useTheme();
   const nav = useNavigate();
-  const [company, setCompany] = useState<Company>(COMPANY_DEFAULT);
-  const [theme, setTheme] = useState(true);
-  const [lang, setLang] = useState("EN");
+  const [company, setCompany] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    try {
-      const c = localStorage.getItem("ops.company");
-      if (c) setCompany({ ...COMPANY_DEFAULT, ...JSON.parse(c) });
-      const l = localStorage.getItem("ops.lang");
-      if (l) setLang(l);
-    } catch {}
+    (async () => {
+      const { data } = await supabase
+        .from("company_settings")
+        .select("*")
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data) setCompany(data);
+      else
+        setCompany({
+          agency_name: "AlienSpark VN",
+          currency: "VND",
+          language: "English",
+          contact_email: "",
+          zalo: "",
+          address: "",
+          notify_new_order: true,
+          notify_payment: true,
+        });
+    })();
   }, []);
 
-  const saveCompany = () => {
-    localStorage.setItem("ops.company", JSON.stringify(company));
-    toast.success("Company settings saved");
+  const saveCompany = async () => {
+    if (!company) return;
+    setSaving(true);
+    const payload = { ...company, updated_at: new Date().toISOString() };
+    const { error } = company.id
+      ? await supabase.from("company_settings").update(payload).eq("id", company.id)
+      : await supabase.from("company_settings").insert(payload);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success("Settings saved");
   };
-  const savePrefs = () => {
-    localStorage.setItem("ops.lang", lang);
-    toast.success("Preferences saved");
-  };
+
+  if (!company) {
+    return <div className="text-muted-foreground text-sm">Loading…</div>;
+  }
 
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Settings</h1>
-        <p className="text-sm text-muted-foreground">Manage your console preferences.</p>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">Settings</h1>
+        <p className="text-sm text-muted-foreground mt-1">Manage your console preferences.</p>
       </div>
       <Tabs defaultValue="company">
         <TabsList className="bg-muted/50">
           <TabsTrigger value="company">Company</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="prefs">Preferences</TabsTrigger>
         </TabsList>
 
@@ -61,8 +78,8 @@ function Settings() {
           <div className="glass rounded-2xl p-6 space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div><Label>Agency name</Label><Input value={company.agency_name} onChange={(e) => setCompany({ ...company, agency_name: e.target.value })} /></div>
-              <div><Label>Contact email</Label><Input value={company.contact_email} onChange={(e) => setCompany({ ...company, contact_email: e.target.value })} /></div>
-              <div><Label>Zalo phone</Label><Input value={company.zalo} onChange={(e) => setCompany({ ...company, zalo: e.target.value })} /></div>
+              <div><Label>Contact email</Label><Input value={company.contact_email ?? ""} onChange={(e) => setCompany({ ...company, contact_email: e.target.value })} /></div>
+              <div><Label>Zalo phone</Label><Input value={company.zalo ?? ""} onChange={(e) => setCompany({ ...company, zalo: e.target.value })} /></div>
               <div><Label>Default currency</Label>
                 <Select value={company.currency} onValueChange={(v) => setCompany({ ...company, currency: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
@@ -75,9 +92,9 @@ function Settings() {
                   <SelectContent><SelectItem value="English">English</SelectItem><SelectItem value="Vietnamese">Vietnamese</SelectItem></SelectContent>
                 </Select>
               </div>
-              <div className="md:col-span-2"><Label>Address</Label><Input value={company.address} onChange={(e) => setCompany({ ...company, address: e.target.value })} /></div>
+              <div className="md:col-span-2"><Label>Address</Label><Input value={company.address ?? ""} onChange={(e) => setCompany({ ...company, address: e.target.value })} /></div>
             </div>
-            <Button onClick={saveCompany} className="bg-primary text-primary-foreground hover:bg-primary/90">Save</Button>
+            <Button onClick={saveCompany} disabled={saving} className="bg-primary text-primary-foreground hover:bg-primary/90">{saving ? "Saving…" : "Save"}</Button>
           </div>
         </TabsContent>
 
@@ -95,26 +112,35 @@ function Settings() {
           </div>
         </TabsContent>
 
+        <TabsContent value="notifications">
+          <div className="glass rounded-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium">New order notifications</div>
+                <div className="text-xs text-muted-foreground">Get notified when a new order is created.</div>
+              </div>
+              <Switch checked={!!company.notify_new_order} onCheckedChange={(v) => setCompany({ ...company, notify_new_order: v })} />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium">Payment notifications</div>
+                <div className="text-xs text-muted-foreground">Alerts when payment status changes.</div>
+              </div>
+              <Switch checked={!!company.notify_payment} onCheckedChange={(v) => setCompany({ ...company, notify_payment: v })} />
+            </div>
+            <Button onClick={saveCompany} disabled={saving} className="bg-primary text-primary-foreground hover:bg-primary/90">{saving ? "Saving…" : "Save"}</Button>
+          </div>
+        </TabsContent>
+
         <TabsContent value="prefs">
           <div className="glass rounded-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium">Dark theme</div>
-                <div className="text-xs text-muted-foreground">Console uses dark futuristic theme by default.</div>
+                <div className="text-xs text-muted-foreground">Toggle dark or light mode.</div>
               </div>
-              <Switch checked={theme} onCheckedChange={setTheme} />
+              <Switch checked={theme === "dark"} onCheckedChange={(v) => setTheme(v ? "dark" : "light")} />
             </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium">Language</div>
-                <div className="text-xs text-muted-foreground">UI language preference.</div>
-              </div>
-              <Select value={lang} onValueChange={setLang}>
-                <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
-                <SelectContent><SelectItem value="EN">English</SelectItem><SelectItem value="VI">Tiếng Việt</SelectItem></SelectContent>
-              </Select>
-            </div>
-            <Button onClick={savePrefs} className="bg-primary text-primary-foreground hover:bg-primary/90">Save</Button>
           </div>
         </TabsContent>
       </Tabs>
