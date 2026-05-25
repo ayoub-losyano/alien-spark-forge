@@ -14,7 +14,144 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activity_logs: {
+        Row: {
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          message: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          message: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          message?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          address: string | null
+          assigned_to: string | null
+          business_name: string | null
+          business_type: string | null
+          client_name: string
+          created_at: string
+          deadline: string | null
+          delivery_days: number | null
+          deposit: number
+          email: string | null
+          facebook: string | null
+          id: string
+          notes: string | null
+          package: string | null
+          payment_method: string | null
+          payment_status: string
+          phone: string | null
+          progress: number
+          status: string
+          tiktok: string | null
+          total: number
+          website: string | null
+          zalo: string | null
+        }
+        Insert: {
+          address?: string | null
+          assigned_to?: string | null
+          business_name?: string | null
+          business_type?: string | null
+          client_name: string
+          created_at?: string
+          deadline?: string | null
+          delivery_days?: number | null
+          deposit?: number
+          email?: string | null
+          facebook?: string | null
+          id?: string
+          notes?: string | null
+          package?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          phone?: string | null
+          progress?: number
+          status?: string
+          tiktok?: string | null
+          total?: number
+          website?: string | null
+          zalo?: string | null
+        }
+        Update: {
+          address?: string | null
+          assigned_to?: string | null
+          business_name?: string | null
+          business_type?: string | null
+          client_name?: string
+          created_at?: string
+          deadline?: string | null
+          delivery_days?: number | null
+          deposit?: number
+          email?: string | null
+          facebook?: string | null
+          id?: string
+          notes?: string | null
+          package?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          phone?: string | null
+          progress?: number
+          status?: string
+          tiktok?: string | null
+          total?: number
+          website?: string | null
+          zalo?: string | null
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          avatar_data_url: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          role: string | null
+          status: string
+        }
+        Insert: {
+          avatar_data_url?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          role?: string | null
+          status?: string
+        }
+        Update: {
+          avatar_data_url?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          role?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
