@@ -28,6 +28,7 @@ function NewOrder() {
 
   const [f, setF] = useState({
     client_name: "",
+    company_name: "",
     zalo: "",
     email: "",
     phone: "",
@@ -38,6 +39,7 @@ function NewOrder() {
     tiktok: "",
     website: "",
     package: "",
+    service: "",
     total: 0,
     deposit: 0,
     payment_method: "",
@@ -96,6 +98,9 @@ function NewOrder() {
           <Field id="client_name" label="Client name *">
             <Input id="client_name" value={f.client_name} onChange={(e) => set("client_name", e.target.value)} required />
           </Field>
+          <Field id="company_name" label="Company name">
+            <Input id="company_name" value={f.company_name} onChange={(e) => set("company_name", e.target.value)} />
+          </Field>
           <Field id="business_name" label="Business name">
             <Input id="business_name" value={f.business_name} onChange={(e) => set("business_name", e.target.value)} />
           </Field>
@@ -104,6 +109,9 @@ function NewOrder() {
           </Field>
           <Field id="address" label="Address">
             <Input id="address" value={f.address} onChange={(e) => set("address", e.target.value)} />
+          </Field>
+          <Field id="service" label="Service / scope">
+            <Input id="service" value={f.service} onChange={(e) => set("service", e.target.value)} placeholder="e.g. Landing page + chatbot" />
           </Field>
         </section>
 
