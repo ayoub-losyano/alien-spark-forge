@@ -43,18 +43,18 @@ function Team() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Team</h1>
-          <p className="text-sm text-muted-foreground">Manage AlienSpark team profiles.</p>
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">Team</h1>
+          <p className="text-sm text-muted-foreground mt-1">Manage AlienSpark team profiles.</p>
         </div>
-        <Button className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2" onClick={() => { setEditing(null); setOpen(true); }}>
+        <Button className="gap-2" onClick={() => { setEditing(null); setOpen(true); }}>
           <Plus className="h-4 w-4" /> Add Member
         </Button>
       </div>
 
-      <div className="glass rounded-2xl p-4 flex gap-3 items-start text-sm">
+      <div className="rounded-xl border border-border bg-accent/40 p-4 flex gap-3 items-start text-sm">
         <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
         <div className="text-muted-foreground">
           To allow this person to log in, create an Auth user in <span className="text-foreground">Lovable Cloud → Users</span> with the same email, or use the future admin invite system. Team profiles here are profile data only — passwords are managed by Auth.
@@ -64,29 +64,37 @@ function Team() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {isLoading && <div className="text-muted-foreground">Loading…</div>}
         {!isLoading && (data ?? []).length === 0 && (
-          <div className="text-muted-foreground glass rounded-2xl p-8 text-center col-span-full">No team members yet.</div>
+          <div className="glass rounded-xl p-10 text-center col-span-full">
+            <div className="mx-auto h-10 w-10 rounded-full bg-primary/10 grid place-items-center mb-3">
+              <Plus className="h-5 w-5 text-primary" />
+            </div>
+            <div className="text-sm font-medium">No team members yet</div>
+            <div className="text-xs text-muted-foreground mt-1">Add your first teammate to get started.</div>
+          </div>
         )}
         {(data ?? []).map((m) => (
-          <div key={m.id} className="glass rounded-2xl p-5">
+          <div key={m.id} className="glass rounded-xl p-5 hover:border-primary/30 transition-colors">
             <div className="flex items-center gap-3">
               {m.avatar_data_url ? (
-                <img src={m.avatar_data_url} className="h-12 w-12 rounded-full object-cover border border-primary/30" />
+                <img src={m.avatar_data_url} className="h-11 w-11 rounded-full object-cover border border-border" />
               ) : (
-                <div className="h-12 w-12 rounded-full bg-primary/20 grid place-items-center font-bold text-primary border border-primary/30">
+                <div className="h-11 w-11 rounded-full bg-primary/10 grid place-items-center font-semibold text-primary border border-primary/20">
                   {m.name?.[0]?.toUpperCase()}
                 </div>
               )}
               <div className="min-w-0">
-                <div className="font-semibold truncate">{m.name}</div>
+                <div className="font-medium truncate">{m.name}</div>
                 <div className="text-xs text-muted-foreground truncate">{m.role ?? "—"}</div>
               </div>
+              <span className="ml-auto text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                {m.status ?? "active"}
+              </span>
             </div>
-            <div className="mt-3 text-xs text-muted-foreground space-y-1">
+            <div className="mt-4 pt-4 border-t border-border text-xs text-muted-foreground space-y-1">
               <div className="truncate">{m.email ?? "—"}</div>
               <div>{m.phone ?? ""}</div>
-              <div><span className="text-primary">{m.status}</span></div>
             </div>
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex gap-1">
               <Button size="sm" variant="ghost" onClick={() => { setEditing(m); setOpen(true); }}><Pencil className="h-3.5 w-3.5 mr-1" />Edit</Button>
               <Button size="sm" variant="ghost" onClick={() => sendReset(m.email ?? "")}><KeyRound className="h-3.5 w-3.5 mr-1" />Send setup</Button>
               <Button size="sm" variant="ghost" onClick={() => del(m.id, m.name)} className="text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
@@ -141,7 +149,7 @@ function MemberDialog({ open, onOpenChange, member, onSaved }: any) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass">
+      <DialogContent>
         <DialogHeader><DialogTitle>{member ? "Edit member" : "Add member"}</DialogTitle></DialogHeader>
         <div className="space-y-3">
           <div><Label>Name *</Label><Input value={f.name ?? ""} onChange={(e) => set("name", e.target.value)} /></div>
@@ -160,8 +168,8 @@ function MemberDialog({ open, onOpenChange, member, onSaved }: any) {
           </div>
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={save}>Save</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button onClick={save}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
