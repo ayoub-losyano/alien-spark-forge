@@ -41,6 +41,78 @@ export type Database = {
         }
         Relationships: []
       }
+      company_settings: {
+        Row: {
+          address: string | null
+          agency_name: string
+          contact_email: string | null
+          currency: string
+          id: string
+          language: string
+          logo_url: string | null
+          notify_new_order: boolean
+          notify_payment: boolean
+          updated_at: string
+          zalo: string | null
+        }
+        Insert: {
+          address?: string | null
+          agency_name?: string
+          contact_email?: string | null
+          currency?: string
+          id?: string
+          language?: string
+          logo_url?: string | null
+          notify_new_order?: boolean
+          notify_payment?: boolean
+          updated_at?: string
+          zalo?: string | null
+        }
+        Update: {
+          address?: string | null
+          agency_name?: string
+          contact_email?: string | null
+          currency?: string
+          id?: string
+          language?: string
+          logo_url?: string | null
+          notify_new_order?: boolean
+          notify_payment?: boolean
+          updated_at?: string
+          zalo?: string | null
+        }
+        Relationships: []
+      }
+      expenses: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string
+          description: string
+          id: string
+          notes: string | null
+          paid_on: string
+        }
+        Insert: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          notes?: string | null
+          paid_on?: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          notes?: string | null
+          paid_on?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           address: string | null
@@ -48,7 +120,9 @@ export type Database = {
           business_name: string | null
           business_type: string | null
           client_name: string
+          company_name: string | null
           created_at: string
+          currency: string
           deadline: string | null
           delivery_days: number | null
           deposit: number
@@ -61,6 +135,7 @@ export type Database = {
           payment_status: string
           phone: string | null
           progress: number
+          service: string | null
           status: string
           tiktok: string | null
           total: number
@@ -73,7 +148,9 @@ export type Database = {
           business_name?: string | null
           business_type?: string | null
           client_name: string
+          company_name?: string | null
           created_at?: string
+          currency?: string
           deadline?: string | null
           delivery_days?: number | null
           deposit?: number
@@ -86,6 +163,7 @@ export type Database = {
           payment_status?: string
           phone?: string | null
           progress?: number
+          service?: string | null
           status?: string
           tiktok?: string | null
           total?: number
@@ -98,7 +176,9 @@ export type Database = {
           business_name?: string | null
           business_type?: string | null
           client_name?: string
+          company_name?: string | null
           created_at?: string
+          currency?: string
           deadline?: string | null
           delivery_days?: number | null
           deposit?: number
@@ -111,6 +191,7 @@ export type Database = {
           payment_status?: string
           phone?: string | null
           progress?: number
+          service?: string | null
           status?: string
           tiktok?: string | null
           total?: number
