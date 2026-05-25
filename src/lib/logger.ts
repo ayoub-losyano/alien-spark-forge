@@ -45,3 +45,35 @@ export const PACKAGES = [
   "Automation",
   "Custom",
 ];
+
+export const TEAM_ROLES = [
+  "Admin",
+  "Manager",
+  "Developer",
+  "Designer",
+  "Sales",
+  "Support",
+] as const;
+
+export const EXPENSE_CATEGORIES = [
+  "Software",
+  "Marketing",
+  "Payroll",
+  "Office",
+  "Hosting",
+  "Travel",
+  "Other",
+];
+
+export async function uploadAvatar(file: File): Promise<string> {
+  const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+  const path = `${crypto.randomUUID()}.${ext}`;
+  const { error } = await supabase.storage.from("avatars").upload(path, file, {
+    cacheControl: "3600",
+    upsert: false,
+    contentType: file.type || undefined,
+  });
+  if (error) throw error;
+  const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+  return data.publicUrl;
+}
