@@ -27,13 +27,13 @@ export const ORDER_STATUSES = [
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
 export const STATUS_COLORS: Record<string, string> = {
-  lead: "bg-blue-500/15 text-blue-300 border-blue-500/30",
-  pending_deposit: "bg-yellow-500/15 text-yellow-300 border-yellow-500/30",
-  active: "bg-primary/15 text-primary border-primary/30",
-  waiting_client: "bg-purple-500/15 text-purple-300 border-purple-500/30",
-  completed: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  overdue: "bg-red-500/15 text-red-300 border-red-500/30",
-  cancelled: "bg-gray-500/15 text-gray-300 border-gray-500/30",
+  lead: "bg-blue-500/10 text-blue-600 dark:text-blue-300 border-blue-500/30",
+  pending_deposit: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30",
+  active: "bg-primary/10 text-primary border-primary/30",
+  waiting_client: "bg-purple-500/10 text-purple-600 dark:text-purple-300 border-purple-500/30",
+  completed: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+  overdue: "bg-red-500/10 text-red-600 dark:text-red-300 border-red-500/30",
+  cancelled: "bg-muted text-muted-foreground border-border",
 };
 
 export const PACKAGES = [

@@ -51,7 +51,7 @@ function Settings() {
         <p className="text-sm text-muted-foreground">Manage your console preferences.</p>
       </div>
       <Tabs defaultValue="company">
-        <TabsList className="bg-white/5">
+        <TabsList className="bg-muted/50">
           <TabsTrigger value="company">Company</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="prefs">Preferences</TabsTrigger>

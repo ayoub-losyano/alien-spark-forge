@@ -60,57 +60,64 @@ function Dashboard() {
   const recent = orders.slice(0, 6);
 
   const stats = [
-    { label: "Total Orders", value: total, icon: ShoppingCart },
-    { label: "Active Projects", value: active, icon: Activity },
-    { label: "Completed", value: completed, icon: CheckCircle2 },
-    { label: "Pending Payments", value: formatVND(pendingPay), icon: Clock },
-    { label: "Total Revenue", value: formatVND(revenue), icon: DollarSign },
-    { label: "Overdue", value: overdue, icon: AlertTriangle },
-    { label: "New Leads (mo)", value: leadsMonth, icon: Sparkles },
-    { label: "Team Members", value: teamQ.data ?? 0, icon: Users },
+    { label: "Total Orders", value: total, icon: ShoppingCart, hint: `${active} active` },
+    { label: "Active Projects", value: active, icon: Activity, hint: "in progress" },
+    { label: "Completed", value: completed, icon: CheckCircle2, hint: total ? `${Math.round((completed / total) * 100)}% rate` : "—" },
+    { label: "Pending Payments", value: formatVND(pendingPay), icon: Clock, hint: "outstanding" },
+    { label: "Total Revenue", value: formatVND(revenue), icon: DollarSign, hint: "all-time" },
+    { label: "Overdue", value: overdue, icon: AlertTriangle, hint: overdue ? "needs attention" : "all clear" },
+    { label: "New Leads (mo)", value: leadsMonth, icon: Sparkles, hint: "this month" },
+    { label: "Team Members", value: teamQ.data ?? 0, icon: Users, hint: "active" },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Operational overview of AlienSpark VN</p>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">Dashboard</h1>
+        <p className="text-sm text-muted-foreground mt-1">Operational overview of AlienSpark VN</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((s) => (
-          <div key={s.label} className="glass rounded-2xl p-4">
+          <div key={s.label} className="glass rounded-xl p-5">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">{s.label}</span>
-              <s.icon className="h-4 w-4 text-primary" />
+              <span className="text-xs font-medium text-muted-foreground">{s.label}</span>
+              <div className="h-7 w-7 rounded-md bg-primary/10 grid place-items-center">
+                <s.icon className="h-3.5 w-3.5 text-primary" />
+              </div>
             </div>
-            <div className="mt-2 text-xl md:text-2xl font-bold">{s.value}</div>
+            <div className="mt-3 text-2xl font-semibold tracking-tight">{s.value}</div>
+            <div className="mt-1 text-[11px] text-muted-foreground">{s.hint}</div>
           </div>
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-4">
-        <div className="glass rounded-2xl p-5 lg:col-span-2">
-          <h2 className="font-semibold mb-3">Recent Orders</h2>
+      <div className="grid lg:grid-cols-3 gap-5">
+        <div className="glass rounded-xl lg:col-span-2 overflow-hidden">
+          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+            <h2 className="font-semibold text-sm">Recent Orders</h2>
+            <span className="text-xs text-muted-foreground">Last {recent.length}</span>
+          </div>
+          <div className="p-5">
           {ordersQ.isLoading ? (
             <div className="text-sm text-muted-foreground">Loading…</div>
           ) : recent.length === 0 ? (
-            <div className="text-sm text-muted-foreground py-8 text-center">No orders yet. Create your first one.</div>
+            <div className="text-sm text-muted-foreground py-10 text-center">No orders yet. Create your first one.</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="text-xs text-muted-foreground">
-                  <tr className="border-b border-border/40">
-                    <th className="text-left py-2 font-normal">Client</th>
-                    <th className="text-left py-2 font-normal">Package</th>
-                    <th className="text-left py-2 font-normal">Total</th>
-                    <th className="text-left py-2 font-normal">Status</th>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-2 font-medium">Client</th>
+                    <th className="text-left py-2 font-medium">Package</th>
+                    <th className="text-left py-2 font-medium">Total</th>
+                    <th className="text-left py-2 font-medium">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {recent.map((o) => (
-                    <tr key={o.id} className="border-b border-border/20 last:border-0">
-                      <td className="py-3">{o.client_name}</td>
+                    <tr key={o.id} className="border-b border-border/60 last:border-0">
+                      <td className="py-3 font-medium">{o.client_name}</td>
                       <td className="py-3 text-muted-foreground">{o.package ?? "—"}</td>
                       <td className="py-3">{formatVND(o.total)}</td>
                       <td className="py-3">
@@ -124,10 +131,14 @@ function Dashboard() {
               </table>
             </div>
           )}
+          </div>
         </div>
 
-        <div className="glass rounded-2xl p-5">
-          <h2 className="font-semibold mb-3">Recent Activity</h2>
+        <div className="glass rounded-xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-border">
+            <h2 className="font-semibold text-sm">Recent Activity</h2>
+          </div>
+          <div className="p-5">
           {(logsQ.data ?? []).length === 0 ? (
             <div className="text-sm text-muted-foreground">No activity yet.</div>
           ) : (
@@ -143,6 +154,7 @@ function Dashboard() {
               ))}
             </ul>
           )}
+          </div>
         </div>
       </div>
     </div>

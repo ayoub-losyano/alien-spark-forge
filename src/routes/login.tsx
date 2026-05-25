@@ -38,32 +38,34 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen grid place-items-center px-4">
-      <div className="w-full max-w-md glass rounded-3xl p-8 neon-border">
-        <div className="flex flex-col items-center mb-6">
-          <img src={logoIcon} alt="AlienSpark" className="h-16 w-16 drop-shadow-[0_0_24px_rgba(57,255,20,0.45)]" />
-          <h1 className="mt-3 text-2xl font-bold">
-            <span className="neon-text">AlienSpark</span> OPS
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">Internal operations console</p>
+    <div className="min-h-screen grid place-items-center px-4 bg-background text-foreground">
+      <div className="w-full max-w-sm">
+        <div className="flex flex-col items-center mb-8">
+          <div className="h-12 w-12 rounded-xl bg-primary/10 border border-primary/30 grid place-items-center mb-4">
+            <img src={logoIcon} alt="AlienSpark" className="h-7 w-7" />
+          </div>
+          <h1 className="text-xl font-semibold tracking-tight">Welcome back</h1>
+          <p className="text-sm text-muted-foreground mt-1">Sign in to AlienSpark OPS Console</p>
         </div>
-        <form onSubmit={submit} className="space-y-4">
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
-          <div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <Link to="/forgot-password" className="text-xs text-primary hover:underline">Forgot?</Link>
+        <div className="glass rounded-xl p-6">
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@alienspark.com" />
             </div>
-            <Input id="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-          </div>
-          {err && <div className="text-sm text-destructive">{err}</div>}
-          <Button type="submit" disabled={busy} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-            {busy ? "Signing in…" : "Sign in"}
-          </Button>
-        </form>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link to="/forgot-password" className="text-xs text-primary hover:underline">Forgot?</Link>
+              </div>
+              <Input id="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            </div>
+            {err && <div className="text-sm text-destructive">{err}</div>}
+            <Button type="submit" disabled={busy} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
+              {busy ? "Signing in…" : "Sign in"}
+            </Button>
+          </form>
+        </div>
         <p className="text-xs text-muted-foreground text-center mt-6">
           AlienSpark VN · Internal use only
         </p>

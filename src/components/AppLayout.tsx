@@ -9,12 +9,22 @@ import {
   Settings as SettingsIcon,
   LogOut,
   Bell,
+  Sun,
+  Moon,
 } from "lucide-react";
-import logoWide from "@/assets/logo-wide.png";
 import logoIcon from "@/assets/logo-icon.png";
 import { useAuth } from "@/lib/auth";
+import { useTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -27,6 +37,7 @@ const nav = [
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut } = useAuth();
+  const { theme, toggle } = useTheme();
   const nav_ = useNavigate();
   const loc = useLocation();
 
@@ -36,20 +47,25 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-muted-foreground">Loading…</div>
       </div>
     );
   }
 
+  const initial = (user.email?.[0] ?? "?").toUpperCase();
+
   return (
-    <div className="min-h-screen flex">
-      <aside className="hidden md:flex w-64 flex-col border-r border-border/40 bg-sidebar/60 backdrop-blur">
-        <div className="p-5 border-b border-border/40">
-          <img src={logoWide} alt="AlienSpark" className="h-8 object-contain" />
-          <div className="text-xs text-muted-foreground mt-1 pl-1">OPS Console</div>
+    <div className="min-h-screen flex bg-background text-foreground">
+      <aside className="hidden md:flex w-60 flex-col border-r border-border bg-sidebar">
+        <div className="h-16 flex items-center gap-2.5 px-5 border-b border-border">
+          <img src={logoIcon} alt="AlienSpark" className="h-7 w-7" />
+          <div className="leading-tight">
+            <div className="text-sm font-semibold tracking-tight">AlienSpark</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">OPS Console</div>
+          </div>
         </div>
-        <nav className="flex-1 p-3 space-y-1">
+        <nav className="flex-1 p-3 space-y-0.5">
           {nav.map((n) => {
             const active = loc.pathname === n.to || (n.to !== "/dashboard" && loc.pathname.startsWith(n.to));
             return (
@@ -57,53 +73,83 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 key={n.to}
                 to={n.to}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all",
+                  "group relative flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                   active
-                    ? "bg-primary/15 text-primary neon-border"
-                    : "text-muted-foreground hover:text-foreground hover:bg-white/5",
+                    ? "bg-accent text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/60",
                 )}
               >
-                <n.icon className="h-4 w-4" />
+                <span
+                  className={cn(
+                    "absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-r-full transition-colors",
+                    active ? "bg-primary" : "bg-transparent",
+                  )}
+                />
+                <n.icon className={cn("h-4 w-4 shrink-0", active && "text-primary")} />
                 {n.label}
               </Link>
             );
           })}
         </nav>
-        <div className="p-3 border-t border-border/40">
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-            onClick={async () => {
-              await signOut();
-              nav_({ to: "/login" });
-            }}
-          >
-            <LogOut className="h-4 w-4" /> Logout
-          </Button>
+        <div className="p-3 border-t border-border">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground px-3 pb-2">Signed in</div>
+          <div className="px-3 pb-3 text-xs text-foreground/80 truncate">{user.email}</div>
         </div>
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 border-b border-border/40 flex items-center justify-between px-4 md:px-6 bg-background/40 backdrop-blur sticky top-0 z-30">
-          <div className="flex items-center gap-3 md:hidden">
-            <img src={logoIcon} alt="" className="h-8 w-8" />
-            <span className="font-semibold neon-text">AlienSpark</span>
+        <header className="h-16 border-b border-border flex items-center justify-between px-4 md:px-6 bg-background/80 backdrop-blur sticky top-0 z-30">
+          <div className="flex items-center gap-2.5 md:hidden">
+            <img src={logoIcon} alt="" className="h-7 w-7" />
+            <span className="font-semibold text-sm">AlienSpark</span>
           </div>
-          <div className="hidden md:block text-sm text-muted-foreground">
-            Welcome back, <span className="text-foreground">{user.email}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="text-muted-foreground">
+          <div className="hidden md:block" />
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={toggle} aria-label="Toggle theme">
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+            <Button variant="ghost" size="icon" aria-label="Notifications">
               <Bell className="h-4 w-4" />
             </Button>
-            <div className="h-9 w-9 rounded-full bg-primary/20 grid place-items-center text-primary font-semibold border border-primary/30">
-              {user.email?.[0]?.toUpperCase() ?? "?"}
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="ml-1 h-8 w-8 rounded-full bg-primary/15 text-primary border border-primary/30 grid place-items-center text-xs font-semibold hover:bg-primary/25 transition-colors"
+                  aria-label="Account"
+                >
+                  {initial}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="text-xs text-muted-foreground">Signed in as</div>
+                  <div className="text-sm font-medium truncate">{user.email}</div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => nav_({ to: "/settings" })}>
+                  <SettingsIcon className="h-4 w-4" /> Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={toggle}>
+                  {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  {theme === "dark" ? "Light mode" : "Dark mode"}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onClick={async () => {
+                    await signOut();
+                    nav_({ to: "/login" });
+                  }}
+                >
+                  <LogOut className="h-4 w-4" /> Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
         {/* Mobile bottom nav */}
-        <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border/40 bg-background/90 backdrop-blur grid grid-cols-6">
+        <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/95 backdrop-blur grid grid-cols-6">
           {nav.map((n) => {
             const active = loc.pathname === n.to || (n.to !== "/dashboard" && loc.pathname.startsWith(n.to));
             return (
@@ -111,7 +157,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 key={n.to}
                 to={n.to}
                 className={cn(
-                  "flex flex-col items-center justify-center py-2 text-[10px] gap-0.5",
+                  "flex flex-col items-center justify-center py-2.5 gap-1",
                   active ? "text-primary" : "text-muted-foreground",
                 )}
               >
@@ -121,7 +167,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        <main className="flex-1 p-4 md:p-6 pb-24 md:pb-6 max-w-[1400px] w-full mx-auto">{children}</main>
+        <main className="flex-1 p-4 md:p-8 pb-24 md:pb-10 max-w-[1400px] w-full mx-auto">{children}</main>
       </div>
     </div>
   );
