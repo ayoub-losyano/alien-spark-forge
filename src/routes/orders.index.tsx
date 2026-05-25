@@ -90,7 +90,7 @@ function OrdersPage() {
       <div className="glass rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="text-xs text-muted-foreground bg-white/5">
+            <thead className="text-xs text-muted-foreground bg-muted/50">
               <tr>
                 <th className="text-left px-4 py-3 font-normal">Client</th>
                 <th className="text-left px-4 py-3 font-normal">Package</th>
@@ -110,7 +110,7 @@ function OrdersPage() {
                 <tr><td colSpan={8} className="text-center py-10 text-muted-foreground">No orders found.</td></tr>
               )}
               {filtered.map((o) => (
-                <tr key={o.id} className="border-t border-border/30 hover:bg-white/5">
+                <tr key={o.id} className="border-t border-border hover:bg-muted/50">
                   <td className="px-4 py-3">
                     <div className="font-medium">{o.client_name}</div>
                     <div className="text-xs text-muted-foreground">{o.business_name}</div>
@@ -120,7 +120,7 @@ function OrdersPage() {
                   <td className="px-4 py-3">{formatVND(o.deposit)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-20 bg-white/10 rounded-full overflow-hidden">
+                      <div className="h-1.5 w-20 bg-muted rounded-full overflow-hidden">
                         <div className="h-full bg-primary" style={{ width: `${o.progress ?? 0}%` }} />
                       </div>
                       <span className="text-xs text-muted-foreground">{o.progress ?? 0}%</span>
