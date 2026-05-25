@@ -34,6 +34,12 @@ function LoginPage() {
       return;
     }
     toast.success("Welcome back");
+    try {
+      await supabase.from("activity_logs").insert({
+        type: "login",
+        message: `User ${email} signed in`,
+      });
+    } catch {}
     nav({ to: "/dashboard" });
   };
 
