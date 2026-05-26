@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   PlusCircle,
@@ -11,6 +11,7 @@ import {
   Bell,
   Sun,
   Moon,
+  Search,
 } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
 import { useAuth } from "@/lib/auth";
@@ -25,6 +26,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationsBell } from "@/components/NotificationsBell";
+import { GlobalSearch } from "@/components/GlobalSearch";
+import { usePresence } from "@/hooks/use-presence";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -40,10 +44,23 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const { theme, toggle } = useTheme();
   const nav_ = useNavigate();
   const loc = useLocation();
+  const [searchOpen, setSearchOpen] = useState(false);
+  usePresence(user?.email ?? null);
 
   useEffect(() => {
     if (!loading && !user) nav_({ to: "/login" });
   }, [user, loading, nav_]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   if (loading || !user) {
     return (
@@ -105,12 +122,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
           <div className="hidden md:block" />
           <div className="flex items-center gap-1">
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="hidden md:flex items-center gap-2 h-9 px-3 rounded-md border border-border text-xs text-muted-foreground hover:bg-accent transition-colors mr-2"
+            >
+              <Search className="h-3.5 w-3.5" />
+              <span>Search…</span>
+              <kbd className="ml-2 text-[10px] px-1.5 py-0.5 bg-muted rounded border border-border">⌘K</kbd>
+            </button>
             <Button variant="ghost" size="icon" onClick={toggle} aria-label="Toggle theme">
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
-            <Button variant="ghost" size="icon" aria-label="Notifications">
-              <Bell className="h-4 w-4" />
-            </Button>
+            <NotificationsBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
@@ -169,6 +192,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
         <main className="flex-1 p-4 md:p-8 pb-24 md:pb-10 max-w-[1400px] w-full mx-auto">{children}</main>
       </div>
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 }

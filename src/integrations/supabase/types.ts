@@ -113,120 +113,367 @@ export type Database = {
         }
         Relationships: []
       }
+      invoices: {
+        Row: {
+          amount: number
+          client_name: string | null
+          created_at: string
+          currency: string
+          due_date: string | null
+          id: string
+          issued_at: string
+          notes: string | null
+          number: string
+          order_id: string | null
+          paid_at: string | null
+          status: string
+        }
+        Insert: {
+          amount?: number
+          client_name?: string | null
+          created_at?: string
+          currency?: string
+          due_date?: string | null
+          id?: string
+          issued_at?: string
+          notes?: string | null
+          number: string
+          order_id?: string | null
+          paid_at?: string | null
+          status?: string
+        }
+        Update: {
+          amount?: number
+          client_name?: string | null
+          created_at?: string
+          currency?: string
+          due_date?: string | null
+          id?: string
+          issued_at?: string
+          notes?: string | null
+          number?: string
+          order_id?: string | null
+          paid_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          read_at: string | null
+          recipient_id: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          read_at?: string | null
+          recipient_id?: string | null
+          title: string
+          type: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          read_at?: string | null
+          recipient_id?: string | null
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      order_attachments: {
+        Row: {
+          created_at: string
+          id: string
+          mime: string | null
+          name: string
+          order_id: string
+          size: number | null
+          uploaded_by: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mime?: string | null
+          name: string
+          order_id: string
+          size?: number | null
+          uploaded_by?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mime?: string | null
+          name?: string
+          order_id?: string
+          size?: number | null
+          uploaded_by?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_attachments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_comments: {
+        Row: {
+          author_name: string | null
+          body: string
+          created_at: string
+          id: string
+          is_internal: boolean
+          order_id: string
+        }
+        Insert: {
+          author_name?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          order_id: string
+        }
+        Update: {
+          author_name?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_comments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          from_status: string | null
+          id: string
+          note: string | null
+          order_id: string
+          to_status: string
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          order_id: string
+          to_status: string
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          order_id?: string
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           address: string | null
+          assigned_employee_id: string | null
           assigned_to: string | null
           business_name: string | null
           business_type: string | null
+          client_avatar_url: string | null
           client_name: string
+          client_notes: string | null
           company_name: string | null
+          country: string | null
           created_at: string
           currency: string
           deadline: string | null
           delivery_days: number | null
           deposit: number
           email: string | null
+          estimated_delivery: string | null
           facebook: string | null
           id: string
+          internal_notes: string | null
           notes: string | null
           package: string | null
           payment_method: string | null
           payment_status: string
           phone: string | null
+          priority: string
           progress: number
           service: string | null
+          service_category: string | null
           status: string
           tiktok: string | null
           total: number
           website: string | null
+          whatsapp: string | null
           zalo: string | null
         }
         Insert: {
           address?: string | null
+          assigned_employee_id?: string | null
           assigned_to?: string | null
           business_name?: string | null
           business_type?: string | null
+          client_avatar_url?: string | null
           client_name: string
+          client_notes?: string | null
           company_name?: string | null
+          country?: string | null
           created_at?: string
           currency?: string
           deadline?: string | null
           delivery_days?: number | null
           deposit?: number
           email?: string | null
+          estimated_delivery?: string | null
           facebook?: string | null
           id?: string
+          internal_notes?: string | null
           notes?: string | null
           package?: string | null
           payment_method?: string | null
           payment_status?: string
           phone?: string | null
+          priority?: string
           progress?: number
           service?: string | null
+          service_category?: string | null
           status?: string
           tiktok?: string | null
           total?: number
           website?: string | null
+          whatsapp?: string | null
           zalo?: string | null
         }
         Update: {
           address?: string | null
+          assigned_employee_id?: string | null
           assigned_to?: string | null
           business_name?: string | null
           business_type?: string | null
+          client_avatar_url?: string | null
           client_name?: string
+          client_notes?: string | null
           company_name?: string | null
+          country?: string | null
           created_at?: string
           currency?: string
           deadline?: string | null
           delivery_days?: number | null
           deposit?: number
           email?: string | null
+          estimated_delivery?: string | null
           facebook?: string | null
           id?: string
+          internal_notes?: string | null
           notes?: string | null
           package?: string | null
           payment_method?: string | null
           payment_status?: string
           phone?: string | null
+          priority?: string
           progress?: number
           service?: string | null
+          service_category?: string | null
           status?: string
           tiktok?: string | null
           total?: number
           website?: string | null
+          whatsapp?: string | null
           zalo?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_assigned_employee_id_fkey"
+            columns: ["assigned_employee_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       team_members: {
         Row: {
           avatar_data_url: string | null
+          bio: string | null
           created_at: string
           email: string | null
           id: string
+          last_seen_at: string | null
           name: string
+          permissions: Json
           phone: string | null
           role: string | null
           status: string
         }
         Insert: {
           avatar_data_url?: string | null
+          bio?: string | null
           created_at?: string
           email?: string | null
           id?: string
+          last_seen_at?: string | null
           name: string
+          permissions?: Json
           phone?: string | null
           role?: string | null
           status?: string
         }
         Update: {
           avatar_data_url?: string | null
+          bio?: string | null
           created_at?: string
           email?: string | null
           id?: string
+          last_seen_at?: string | null
           name?: string
+          permissions?: Json
           phone?: string | null
           role?: string | null
           status?: string
