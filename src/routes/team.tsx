@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Plus, Trash2, Pencil, KeyRound, Info } from "lucide-react";
 import { logActivity, TEAM_ROLES, uploadAvatar } from "@/lib/logger";
+import { Link } from "@tanstack/react-router";
+import { isOnline } from "@/hooks/use-presence";
 
 export const Route = createFileRoute("/team")({ component: () => <AppLayout><Team /></AppLayout> });
 
@@ -76,15 +78,18 @@ function Team() {
         {(data ?? []).map((m) => (
           <div key={m.id} className="glass rounded-xl p-5 hover:border-primary/30 transition-colors">
             <div className="flex items-center gap-3">
-              {m.avatar_data_url ? (
-                <img src={m.avatar_data_url} className="h-11 w-11 rounded-full object-cover border border-border" />
-              ) : (
-                <div className="h-11 w-11 rounded-full bg-primary/10 grid place-items-center font-semibold text-primary border border-primary/20">
-                  {m.name?.[0]?.toUpperCase()}
-                </div>
-              )}
+              <div className="relative">
+                {m.avatar_data_url ? (
+                  <img src={m.avatar_data_url} className="h-11 w-11 rounded-full object-cover border border-border" />
+                ) : (
+                  <div className="h-11 w-11 rounded-full bg-primary/10 grid place-items-center font-semibold text-primary border border-primary/20">
+                    {m.name?.[0]?.toUpperCase()}
+                  </div>
+                )}
+                <span className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full ring-2 ring-background ${isOnline((m as any).last_seen_at) ? "bg-emerald-500" : "bg-muted-foreground/40"}`} />
+              </div>
               <div className="min-w-0">
-                <div className="font-medium truncate">{m.name}</div>
+                <Link to="/team/$id" params={{ id: m.id }} className="font-medium truncate hover:underline">{m.name}</Link>
                 <div className="text-xs text-muted-foreground truncate">{m.role ?? "—"}</div>
               </div>
               <span className="ml-auto text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
