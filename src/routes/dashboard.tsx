@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/components/AppLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { formatVND, STATUS_COLORS } from "@/lib/logger";
+import { formatVND } from "@/lib/logger";
+import { StatusBadge } from "@/components/StatusBadge";
+import { Link } from "@tanstack/react-router";
 import {
   ShoppingCart,
   Activity,
@@ -42,9 +44,11 @@ function Dashboard() {
 
   const orders = ordersQ.data ?? [];
   const total = orders.length;
-  const active = orders.filter((o) => o.status === "active").length;
-  const completed = orders.filter((o) => o.status === "completed").length;
-  const overdue = orders.filter((o) => o.status === "overdue").length;
+  const activeStatuses = ["lead", "contacted", "waiting_payment", "in_progress", "review"];
+  const active = orders.filter((o) => activeStatuses.includes(o.status)).length;
+  const completed = orders.filter((o) => o.status === "completed" || o.status === "delivered").length;
+  const now0 = new Date();
+  const overdue = orders.filter((o) => o.deadline && new Date(o.deadline) < now0 && !["completed", "delivered", "cancelled"].includes(o.status)).length;
   const revenue = orders.reduce((s, o) => s + Number(o.total ?? 0), 0);
   const pendingPay = orders
     .filter((o) => o.payment_status !== "completed")
@@ -121,9 +125,9 @@ function Dashboard() {
                       <td className="py-3 text-muted-foreground">{o.package ?? "—"}</td>
                       <td className="py-3">{formatVND(o.total)}</td>
                       <td className="py-3">
-                        <span className={`text-xs px-2 py-0.5 rounded-full border ${STATUS_COLORS[o.status] ?? ""}`}>
-                          {o.status}
-                        </span>
+                        <Link to="/orders/$id" params={{ id: o.id }}>
+                          <StatusBadge status={o.status} />
+                        </Link>
                       </td>
                     </tr>
                   ))}
