@@ -1,0 +1,49 @@
+# Docker Compose for Development and Production
+
+version: '3.8'
+
+services:
+  # Main application (for static hosting)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_PUBLISHABLE_KEY=${VITE_SUPABASE_PUBLISHABLE_KEY}
+      - VITE_APP_NAME=${VITE_APP_NAME:-AlienSpark OPS Console}
+      - VITE_APP_URL=${VITE_APP_URL:-http://localhost:3000}
+      - VITE_ENVIRONMENT=production
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx reverse proxy (optional, for production)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro  # SSL certificates
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - app-network
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
+
+networks:
+  app-network:
+    driver: bridge
