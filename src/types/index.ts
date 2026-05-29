@@ -6,7 +6,7 @@ export type {
   TablesUpdate,
   Enums,
   CompositeTypes,
-} from './integrations/supabase/types';
+} from '../integrations/supabase/types';
 
 // Domain-specific types derived from database types
 export type {
@@ -32,4 +32,4 @@ export type {
   OrderAttachmentInsert,
   OrderStatusHistory,
   OrderStatusHistoryInsert,
-} from './types/domain';
+} from './domain';
