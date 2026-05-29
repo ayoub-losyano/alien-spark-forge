@@ -61,10 +61,10 @@ export function useOrders() {
 
 export function useOrder(id: string | undefined, enabled: boolean = true) {
   return useAsyncData({
-    queryKey: ['order', id],
+    queryKey: ['order', id ?? ''],
     queryFn: async () => {
       const { supabase } = await import('@/integrations/supabase/client');
-      const { data, error } = await supabase.from('orders').select('*').eq('id', id).single();
+      const { data, error } = await supabase.from('orders').select('*').eq('id', id!).single();
       if (error) throw error;
       return data;
     },
