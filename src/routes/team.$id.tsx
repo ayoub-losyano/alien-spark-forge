@@ -55,7 +55,7 @@ function Profile() {
   useEffect(() => {
     if (m) {
       setBio(m.bio ?? "");
-      setNotes(m.notes ?? "");
+      setNotes(((m as any).notes ?? "") as string);
     }
   }, [m?.id]); // eslint-disable-line
 
@@ -79,7 +79,7 @@ function Profile() {
     !["completed", "cancelled", "delivered"].includes(o.status)
   ).length;
   const online = isOnline(m.last_seen_at);
-  const perms = m.permissions ?? {};
+  const perms = ((m.permissions as Record<string, boolean> | null) ?? {}) as Record<string, boolean>;
 
   return (
     <div className="space-y-6">
@@ -152,7 +152,7 @@ function Profile() {
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              onBlur={() => notes !== (m.notes ?? "") && updateMember({ notes })}
+              onBlur={() => notes !== ((m as any).notes ?? "") && updateMember({ bio: notes })}
             />
           </div>
           <div>
